@@ -1,0 +1,336 @@
+<ion-header class="profile-header" [translucent]="false">
+  <ion-toolbar>
+    <ion-title class="header-title">
+      <span class="title-text"> Profile </span>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="profile-content">
+  
+  <!-- Profile Card -->
+  <div class="profile-card">
+    <!-- Avatar -->
+    <div class="avatar-container">
+      <div class="profile-avatar">
+        <span class="avatar-initials">{{ userAvatar }}</span>
+      </div>
+      <div class="avatar-badge">
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </div>
+    </div>
+
+    <!-- Name & Email -->
+    <h2 class="user-name">{{ userName }}</h2>
+    <p class="user-email">{{ userEmail }}</p>
+
+    <!-- Quick Stats -->
+    <div class="quick-stats">
+      <div class="stat-item">
+        <ion-icon name="heart"></ion-icon>
+        <span>{{ favorites.length }}</span>
+        <p>Favorites</p>
+      </div>
+      <div class="stat-item">
+        <ion-icon name="star"></ion-icon>
+        <span>{{ interests.length }}</span>
+        <p>Interests</p>
+      </div>
+      <div class="stat-item">
+        <ion-icon name="time"></ion-icon>
+        <span>24h</span>
+        <p>Watch Time</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Favorites Section -->
+  <section class="section" *ngIf="favorites.length">
+    <div class="section-header">
+      <h3>
+        <ion-icon name="heart" class="section-icon"></ion-icon>
+        My Favorites
+      </h3>
+    </div>
+
+    <div class="favorites-scroll">
+      <div 
+        class="favorite-card" 
+        *ngFor="let movie of favorites"
+        (click)="openMovieDetail(movie.id)">
+        <img [src]="movie.poster" [alt]="movie.title" />
+        
+        <!-- Remove button -->
+        <button 
+          class="remove-btn"
+          (click)="removeFavorite(movie.id, $event)">
+          <ion-icon name="close"></ion-icon>
+        </button>
+        
+        <div class="favorite-info">
+          <p class="favorite-title">{{ movie.title }}</p>
+          <p class="favorite-year">{{ movie.year }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Empty Favorites -->
+  <div class="empty-state" *ngIf="!favorites.length">
+    <ion-icon name="heart-outline" class="empty-icon"></ion-icon>
+    <h3>No Favorites Yet</h3>
+    <p>Start adding movies to your favorites!</p>
+  </div>
+
+  <!-- Settings List -->
+  <div class="settings-list">
+    
+    <!-- Interests -->
+    <ion-item button (click)="openInterests()" detail>
+      <ion-icon name="flash" slot="start" color="warning"></ion-icon>
+      <ion-label>
+        <h3>Interested Content</h3>
+        <p>{{ interests.join(', ') }}</p>
+      </ion-label>
+    </ion-item>
+
+    <!-- Language -->
+    <ion-item button (click)="openLanguage()" detail>
+      <ion-icon name="language" slot="start" color="primary"></ion-icon>
+      <ion-label>
+        <h3>Language</h3>
+        <p>{{ selectedLanguage }}</p>
+      </ion-label>
+    </ion-item>
+
+    <!-- Settings -->
+    <ion-item button (click)="openSettings()" detail>
+      <ion-icon name="settings" slot="start" color="medium"></ion-icon>
+      <ion-label>
+        <h3>Settings</h3>
+        <p>App preferences & data</p>
+      </ion-label>
+    </ion-item>
+
+    <!-- Version -->
+    <ion-item>
+      <ion-icon name="information-circle" slot="start" color="success"></ion-icon>
+      <ion-label>
+        <h3>App Version</h3>
+        <p>{{ appVersion }}</p>
+      </ion-label>
+    </ion-item>
+
+  </div>
+
+</ion-content>
+
+<!-- ============================================ -->
+<!-- ALL MODALS BELOW (OUTSIDE ion-content) -->
+<!-- ============================================ -->
+
+<!-- Interests Modal -->
+<ion-modal 
+  [isOpen]="isInterestsModalOpen" 
+  (didDismiss)="isInterestsModalOpen = false"
+  class="interests-modal">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Interested Content</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="isInterestsModalOpen = false">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-content">
+      <div class="modal-section">
+        <p class="modal-description">Select your favorite movie genres</p>
+        
+        <div class="genre-chips">
+          <ion-chip 
+            *ngFor="let genre of ['Action', 'Comedy', 'Drama', 'Thriller', 'Horror', 'Sci-Fi', 'Romance', 'Animation']"
+            [color]="isInterestSelected(genre) ? 'primary' : ''"
+            (click)="toggleInterest(genre)">
+            <ion-icon [name]="isInterestSelected(genre) ? 'checkmark-circle' : 'add-circle-outline'"></ion-icon>
+            <ion-label>{{ genre }}</ion-label>
+          </ion-chip>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Language Modal -->
+<ion-modal 
+  [isOpen]="isLanguageModalOpen" 
+  (didDismiss)="isLanguageModalOpen = false"
+  class="language-modal">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Select Language</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="isLanguageModalOpen = false">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-content">
+      <ion-list>
+        <ion-item 
+          button 
+          *ngFor="let lang of languages"
+          (click)="selectLanguage(lang)">
+          <ion-label>{{ lang }}</ion-label>
+          <ion-icon 
+            name="checkmark-circle" 
+            slot="end" 
+            *ngIf="selectedLanguage === lang"
+            color="primary">
+          </ion-icon>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Settings Modal -->
+<ion-modal 
+  [isOpen]="isSettingsModalOpen" 
+  (didDismiss)="isSettingsModalOpen = false"
+  class="settings-modal">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Settings</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="isSettingsModalOpen = false">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-content">
+      <ion-list>
+        
+        <ion-list-header>
+          <ion-label>Account</ion-label>
+        </ion-list-header>
+
+        <ion-item button (click)="openEditProfile()">
+          <ion-icon name="person" slot="start"></ion-icon>
+          <ion-label>Edit Profile</ion-label>
+        </ion-item>
+
+        <ion-item button>
+          <ion-icon name="key" slot="start"></ion-icon>
+          <ion-label>Change Password</ion-label>
+        </ion-item>
+
+        <ion-list-header>
+          <ion-label>Preferences</ion-label>
+        </ion-list-header>
+
+        <ion-item>
+          <ion-icon name="notifications" slot="start"></ion-icon>
+          <ion-label>Notifications</ion-label>
+          <ion-toggle slot="end" checked></ion-toggle>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="moon" slot="start"></ion-icon>
+          <ion-label>Dark Mode</ion-label>
+          <ion-toggle slot="end" checked></ion-toggle>
+        </ion-item>
+
+        <ion-list-header>
+          <ion-label>Data & Storage</ion-label>
+        </ion-list-header>
+
+        <ion-item button (click)="clearAllData()">
+          <ion-icon name="trash" slot="start" color="danger"></ion-icon>
+          <ion-label color="danger">Clear All Data</ion-label>
+        </ion-item>
+
+        <ion-item button (click)="logout()">
+          <ion-icon name="log-out" slot="start" color="warning"></ion-icon>
+          <ion-label color="warning">Logout</ion-label>
+        </ion-item>
+
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Edit Profile Modal (SEPARATE - NOT INSIDE SETTINGS!) -->
+<ion-modal 
+  [isOpen]="isEditProfileModalOpen" 
+  (didDismiss)="cancelEdit()"
+  class="edit-profile-modal">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Edit Profile</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cancelEdit()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-content">
+      <div class="edit-profile-form">
+        
+        <!-- Current Avatar Preview -->
+        <div class="avatar-preview">
+          <div class="preview-avatar">
+            <span class="avatar-initials">{{ generateInitials(editName || userName) }}</span>
+          </div>
+          <p class="preview-text">Your initials will be: <strong>{{ generateInitials(editName || userName) }}</strong></p>
+        </div>
+
+        <!-- Form -->
+        <ion-list>
+          <ion-item>
+            <ion-label position="stacked">Full Name *</ion-label>
+            <ion-input 
+              [(ngModel)]="editName" 
+              placeholder="Enter your name"
+              type="text">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Email Address *</ion-label>
+            <ion-input 
+              [(ngModel)]="editEmail" 
+              placeholder="Enter your email"
+              type="email">
+            </ion-input>
+          </ion-item>
+        </ion-list>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+          <ion-button expand="block" (click)="saveProfile()" color="primary">
+            <ion-icon name="save" slot="start"></ion-icon>
+            Save Changes
+          </ion-button>
+          
+          <ion-button expand="block" fill="outline" (click)="cancelEdit()">
+            Cancel
+          </ion-button>
+        </div>
+
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

@@ -1,0 +1,15 @@
+.custom-tab-button {
+  ion-icon {
+    font-size: 24px;
+    margin-bottom: 4px;
+    transition: all 0.3s ease;
+  }
+
+  &.tab-selected {
+    ion-icon {
+      color: #e50914;
+      transform: translateY(-2px);
+      filter: drop-shadow(0 2px 8px rgba(229, 9, 20, 0.6));
+    }
+  }
+}

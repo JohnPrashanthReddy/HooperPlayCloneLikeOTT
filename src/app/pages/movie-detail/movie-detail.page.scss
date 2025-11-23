@@ -1,0 +1,394 @@
+// ==========================================
+// MOVIE DETAIL PAGE - PREMIUM OTT STYLE
+// ==========================================
+
+.movie-detail-content {
+  --background: #141414;
+  --color: #ffffff;
+}
+
+ion-content {
+  --background: #141414;
+}
+
+// ==========================================
+// LOADING STATE
+// ==========================================
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: #fff;
+
+  ion-spinner {
+    transform: scale(1.5);
+    margin-bottom: 20px;
+  }
+
+  p {
+    font-size: 16px;
+    color: #8e8e93;
+  }
+}
+
+// ==========================================
+// ERROR STATE
+// ==========================================
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+  text-align: center;
+
+  .error-icon {
+    font-size: 80px;
+    color: #e50914;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    color: #fff;
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: #8e8e93;
+    margin-bottom: 20px;
+  }
+
+  ion-button {
+    --background: #e50914;
+  }
+}
+
+// ==========================================
+// DETAIL CONTAINER
+// ==========================================
+
+.detail-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+// ==========================================
+// BACK BUTTON
+// ==========================================
+
+.back-button {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 100;
+  --background: rgba(0, 0, 0, 0.6);
+  --color: #fff;
+  --border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
+  ion-icon {
+    font-size: 24px;
+  }
+
+  &:hover {
+    --background: rgba(0, 0, 0, 0.8);
+  }
+}
+
+// ==========================================
+// HERO SECTION WITH BACKDROP
+// ==========================================
+
+.hero-section {
+  position: relative;
+  height: 400px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: linear-gradient(to top, #141414 0%, transparent 100%);
+  }
+}
+
+.hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(20, 20, 20, 0.3) 0%,
+    rgba(20, 20, 20, 0.8) 70%,
+    rgba(20, 20, 20, 1) 100%
+  );
+}
+
+// ==========================================
+// CONTENT SECTION
+// ==========================================
+
+.content-section {
+  position: relative;
+  padding: 20px 16px;
+  margin-top: -100px;
+  z-index: 2;
+}
+
+// ==========================================
+// POSTER & TITLE ROW
+// ==========================================
+
+.poster-title-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.movie-poster {
+  width: 120px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  flex-shrink: 0;
+}
+
+.title-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  h1 {
+    margin: 0 0 10px;
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+}
+
+// ==========================================
+// META INFO (Rating, Year, Runtime, Rated)
+// ==========================================
+
+.meta-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    font-size: 13px;
+    color: #e5e5e5;
+  }
+
+  .rating {
+    background: rgba(229, 9, 20, 0.2);
+    color: #ffd700;
+    font-weight: 600;
+
+    ion-icon {
+      color: #ffd700;
+      font-size: 16px;
+    }
+  }
+}
+
+// ==========================================
+// GENRES
+// ==========================================
+
+.genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.genre-tag {
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-size: 12px;
+  color: #e5e5e5;
+  font-weight: 500;
+}
+
+// ==========================================
+// ACTION BUTTONS
+// ==========================================
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0 30px;
+}
+
+.play-button {
+  flex: 1;
+  --background: #e50914;
+  --background-hover: #b20710;
+  --color: #fff;
+  --border-radius: 6px;
+  font-weight: 600;
+  font-size: 16px;
+  height: 48px;
+
+  &:hover {
+    --background: #b20710;
+  }
+}
+
+.secondary-buttons {
+  display: flex;
+  gap: 10px;
+
+  ion-button {
+    --border-color: rgba(255, 255, 255, 0.5);
+    --color: #fff;
+    --border-radius: 50%;
+    width: 48px;
+    height: 48px;
+
+    &:hover {
+      --background: rgba(255, 255, 255, 0.1);
+      --border-color: #fff;
+    }
+
+    ion-icon {
+      font-size: 24px;
+    }
+  }
+}
+
+// ==========================================
+// CONTENT SECTIONS
+// ==========================================
+
+.section {
+  margin-bottom: 24px;
+
+  h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #b3b3b3;
+  }
+}
+
+.plot-text {
+  color: #e5e5e5;
+}
+
+.cast-text,
+.director-text {
+  color: #b3b3b3;
+}
+
+.awards-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 3px solid #ffd700;
+
+  ion-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+}
+
+// ==========================================
+// INFO GRID
+// ==========================================
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .label {
+    font-size: 12px;
+    color: #8e8e93;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .value {
+    font-size: 14px;
+    color: #e5e5e5;
+    font-weight: 500;
+  }
+}
+
+// ==========================================
+// RESPONSIVE DESIGN
+// ==========================================
+
+@media (min-width: 768px) {
+  .hero-section {
+    height: 500px;
+  }
+
+  .content-section {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 40px;
+  }
+
+  .poster-title-row {
+    gap: 30px;
+  }
+
+  .movie-poster {
+    width: 200px;
+    height: 300px;
+  }
+
+  .title-info h1 {
+    font-size: 36px;
+  }
+
+  .info-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

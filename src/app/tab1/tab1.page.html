@@ -1,0 +1,293 @@
+<ion-header [translucent]="true" class="custom-header">
+  <ion-toolbar class="gradient-toolbar">
+    <ion-title>
+      <div class="logo-title">
+        <div class="logo-container">
+          <span class="logo-hooper">HOOPER</span>
+          <span class="logo-play">Play</span>
+        </div>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="header-btn">
+        <svg class="header-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 21L16.65 16.65M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </ion-button>
+      <ion-button class="header-btn">
+        <svg class="header-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 8C18 6.4087 17.3679 4.88258 16.2426 3.75736C15.1174 2.63214 13.5913 2 12 2C10.4087 2 8.88258 2.63214 7.75736 3.75736C6.63214 4.88258 6 6.4087 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M13.73 21C13.5542 21.3031 13.3019 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="18" cy="6" r="3" fill="#e50914" class="notification-dot"/>
+        </svg>
+      </ion-button>
+      <ion-button class="header-btn">
+        <svg class="header-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+          <path d="M6 21V19C6 16.7909 7.79086 15 10 15H14C16.2091 15 18 16.7909 18 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ott-content">
+  
+  <!-- Pull to Refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent" color="light"></ion-spinner>
+    <p>Loading Movies...</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!isLoading">
+    
+<!-- Hero Slider -->
+<div *ngIf="heroSlides.length" class="hero-slider">
+  <div
+    class="hero-slide"
+    *ngFor="let movie of heroSlides; let i = index"
+    [class.active]="i === activeSlideIndex">
+
+    <!-- Background Image -->
+    <div class="hero-bg-image" [style.background-image]="'url(' + movie.backdrop + ')'"></div>
+
+    <!-- Content Overlay -->
+    <div class="hero-overlay">
+      <h2>{{ movie.title }}</h2>
+
+      <div class="hero-meta">
+        <span class="year" *ngIf="movie.year">{{ movie.year }}</span>
+      </div>
+
+      <p *ngIf="movie.overview">{{ movie.overview }}</p>
+      <p *ngIf="!movie.overview" class="placeholder-text">Click "Watch Now" to see preview trailer</p>
+
+      <div class="hero-buttons">
+        <ion-button 
+          class="play-btn" 
+          expand="block" 
+          (click)="playPreview(movie, $event)">
+          <ion-icon name="play" slot="start"></ion-icon>
+          Watch Now
+        </ion-button>
+        <ion-button class="info-btn" fill="outline" expand="block" (click)="openMovieDetail(movie.id)">
+          <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+          More Info
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slider Dots -->
+  <div class="slider-dots">
+    <button
+      *ngFor="let movie of heroSlides; let i = index"
+      class="slider-dot"
+      [class.active]="i === activeSlideIndex"
+      (click)="setActiveSlide(i)">
+    </button>
+  </div>
+</div>
+
+<!-- Video Preview Modal with Coming Soon -->
+<ion-modal 
+  [isOpen]="isModalOpen" 
+  (didDismiss)="closeVideoPreview()"
+  [backdropDismiss]="true"
+  class="video-preview-modal">
+  
+  <ng-template>
+    <div class="modal-wrapper">
+      
+      <!-- Close Button -->
+      <button class="modal-close-btn" (click)="closeVideoPreview()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+
+      <!-- Video Container -->
+      <div class="modal-video-container">
+        <video 
+          id="preview-video"
+          class="modal-video"
+          muted
+          playsinline
+          poster="{{ currentPreviewMovie?.backdrop }}">
+        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">        </video>
+
+        <!-- Video Info (Shows during playback) -->
+        <div class="modal-info" *ngIf="!showComingSoon">
+          <h3>{{ currentPreviewMovie?.title }}</h3>
+          <p class="countdown">Preview Trailer • Full movie details available</p>
+        </div>
+
+        <!-- Coming Soon Message (Shows after video) -->
+        <div class="coming-soon-overlay" *ngIf="showComingSoon">
+          <div class="coming-soon-content">
+            <ion-icon name="film-outline" class="coming-soon-icon"></ion-icon>
+            <h2>Full Movie Coming Soon!</h2>
+            <p>{{ currentPreviewMovie?.title }}</p>
+            <div class="loading-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <p class="return-text">Returning to home...</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </ng-template>
+</ion-modal>
+
+    <!-- Trending Now -->
+    <section *ngIf="trendingMovies.length" class="section">
+      <div class="section-header">
+        <h3>
+          <svg class="section-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="currentColor"/>
+          </svg>
+          Trending Now
+        </h3>
+<ion-button fill="clear" size="small" class="see-all-btn" (click)="navigateToSeeAll('Trending Now', trendingMovies)">
+  See All <ion-icon name="chevron-forward-outline"></ion-icon>
+</ion-button>
+      </div>
+
+      <div class="horizontal-scroll">
+        <div class="movie-card" *ngFor="let movie of trendingMovies" (click)="openMovieDetail(movie.id)">
+          <img [src]="movie.poster" [alt]="movie.title" />
+          <div class="movie-info">
+            <p class="movie-title">{{ movie.title }}</p>
+            <div class="movie-meta" *ngIf="movie.year">
+              <ion-icon name="calendar-outline" class="year-icon"></ion-icon>
+              <span>{{ movie.year }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Action Hits -->
+    <section *ngIf="popularMovies.length" class="section">
+      <div class="section-header">
+        <h3>
+          <svg class="section-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="currentColor"/>
+          </svg>
+          Action Hits
+        </h3>
+<ion-button fill="clear" size="small" class="see-all-btn" (click)="navigateToSeeAll('Action Hits', popularMovies)">
+  See All <ion-icon name="chevron-forward-outline"></ion-icon>
+</ion-button>
+      </div>
+
+      <div class="horizontal-scroll">
+        <div class="movie-card" *ngFor="let movie of popularMovies" (click)="openMovieDetail(movie.id)">
+          <img [src]="movie.poster" [alt]="movie.title" />
+          <div class="movie-info">
+            <p class="movie-title">{{ movie.title }}</p>
+            <div class="movie-meta" *ngIf="movie.year">
+              <ion-icon name="calendar-outline" class="year-icon"></ion-icon>
+              <span>{{ movie.year }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comedy Picks -->
+    <section *ngIf="topRatedMovies.length" class="section">
+      <div class="section-header">
+        <h3>
+          <svg class="section-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            <path d="M8 14C8 14 9.5 16 12 16C14.5 16 16 14 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M9 9H9.01M15 9H15.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Comedy Picks
+        </h3>
+ <ion-button fill="clear" size="small" class="see-all-btn" (click)="navigateToSeeAll('Comedy Picks', topRatedMovies)">
+  See All <ion-icon name="chevron-forward-outline"></ion-icon>
+</ion-button>
+      </div>
+
+      <div class="horizontal-scroll">
+        <div class="movie-card" *ngFor="let movie of topRatedMovies" (click)="openMovieDetail(movie.id)">
+          <img [src]="movie.poster" [alt]="movie.title" />
+          <div class="movie-info">
+            <p class="movie-title">{{ movie.title }}</p>
+            <div class="movie-meta" *ngIf="movie.year">
+              <ion-icon name="calendar-outline" class="year-icon"></ion-icon>
+              <span>{{ movie.year }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Latest Releases -->
+    <section *ngIf="nowPlayingMovies.length" class="section">
+      <div class="section-header">
+        <h3>
+          <svg class="section-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M8 21H16M12 17V21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Latest Releases
+        </h3>
+<ion-button fill="clear" size="small" class="see-all-btn" (click)="navigateToSeeAll('Latest Releases', nowPlayingMovies)">
+  See All <ion-icon name="chevron-forward-outline"></ion-icon>
+</ion-button>
+      </div>
+
+      <div class="horizontal-scroll">
+        <div class="movie-card" *ngFor="let movie of nowPlayingMovies" (click)="openMovieDetail(movie.id)">
+          <img [src]="movie.poster" [alt]="movie.title" />
+          <div class="movie-info">
+            <p class="movie-title">{{ movie.title }}</p>
+            <div class="movie-meta" *ngIf="movie.year">
+              <ion-icon name="calendar-outline" class="year-icon"></ion-icon>
+              <span>{{ movie.year }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Vintage Classics -->
+    <section *ngIf="upcomingMovies.length" class="section">
+      <div class="section-header">
+        <h3>
+          <svg class="section-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" stroke="currentColor" stroke-width="2"/>
+            <path d="M7 2V22M17 2V22M2 12H22M2 7H7M2 17H7M17 17H22M17 7H22" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Vintage Classics
+        </h3>
+<ion-button fill="clear" size="small" class="see-all-btn" (click)="navigateToSeeAll('Vintage Classics', upcomingMovies)">
+  See All <ion-icon name="chevron-forward-outline"></ion-icon>
+</ion-button>
+      </div>
+
+      <div class="horizontal-scroll">
+        <div class="movie-card" *ngFor="let movie of upcomingMovies" (click)="openMovieDetail(movie.id)">
+          <img [src]="movie.poster" [alt]="movie.title" />
+          <div class="movie-info">
+            <p class="movie-title">{{ movie.title }}</p>
+            <div class="movie-meta" *ngIf="movie.year">
+              <ion-icon name="calendar-outline" class="year-icon"></ion-icon>
+              <span>{{ movie.year }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</ion-content>

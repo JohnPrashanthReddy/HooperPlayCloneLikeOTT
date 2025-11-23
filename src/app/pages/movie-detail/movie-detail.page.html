@@ -1,0 +1,130 @@
+<ion-content [fullscreen]="true" class="movie-detail-content">
+  
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent" color="light"></ion-spinner>
+    <p>Loading Movie Details...</p>
+  </div>
+
+  <!-- Movie Details -->
+  <div *ngIf="!isLoading && movie" class="detail-container">
+    
+    <!-- Back Button -->
+    <ion-button class="back-button" fill="clear" (click)="goBack()">
+      <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+    </ion-button>
+
+    <!-- Hero Section with Backdrop -->
+    <div class="hero-section" [style.background-image]="'url(' + movie.Poster + ')'">
+      <div class="hero-gradient"></div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="content-section">
+      
+      <!-- Movie Poster & Title -->
+      <div class="poster-title-row">
+        <img [src]="movie.Poster" [alt]="movie.Title" class="movie-poster" />
+        
+        <div class="title-info">
+          <h1>{{ movie.Title }}</h1>
+          
+          <div class="meta-info">
+            <span class="rating" *ngIf="movie.imdbRating && movie.imdbRating !== 'N/A'">
+              <ion-icon name="star"></ion-icon>
+              {{ movie.imdbRating }}
+            </span>
+            <span class="year">{{ movie.Year }}</span>
+            <span class="runtime" *ngIf="movie.Runtime && movie.Runtime !== 'N/A'">
+              {{ movie.Runtime }}
+            </span>
+            <span class="rated" *ngIf="movie.Rated && movie.Rated !== 'N/A'">
+              {{ movie.Rated }}
+            </span>
+          </div>
+
+          <!-- Genres -->
+          <div class="genres" *ngIf="genres.length">
+            <span class="genre-tag" *ngFor="let genre of genres">{{ genre }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <ion-button expand="block" class="play-button" (click)="playMovie()">
+          <ion-icon name="play" slot="start"></ion-icon>
+          Play Now
+        </ion-button>
+        
+        <div class="secondary-buttons">
+          <ion-button fill="outline" (click)="addToWatchlist()">
+            <ion-icon name="add" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button fill="outline" (click)="shareMovie()">
+            <ion-icon name="share-social" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Plot/Description -->
+      <div class="section" *ngIf="movie.Plot && movie.Plot !== 'N/A'">
+        <h2>Plot</h2>
+        <p class="plot-text">{{ movie.Plot }}</p>
+      </div>
+
+      <!-- Cast & Crew -->
+      <div class="section" *ngIf="movie.Actors && movie.Actors !== 'N/A'">
+        <h2>Cast</h2>
+        <p class="cast-text">{{ movie.Actors }}</p>
+      </div>
+
+      <div class="section" *ngIf="movie.Director && movie.Director !== 'N/A'">
+        <h2>Director</h2>
+        <p class="director-text">{{ movie.Director }}</p>
+      </div>
+
+      <!-- Additional Info -->
+      <div class="info-grid">
+        <div class="info-item" *ngIf="movie.Released && movie.Released !== 'N/A'">
+          <span class="label">Release Date</span>
+          <span class="value">{{ movie.Released }}</span>
+        </div>
+        
+        <div class="info-item" *ngIf="movie.Language && movie.Language !== 'N/A'">
+          <span class="label">Language</span>
+          <span class="value">{{ movie.Language }}</span>
+        </div>
+        
+        <div class="info-item" *ngIf="movie.Country && movie.Country !== 'N/A'">
+          <span class="label">Country</span>
+          <span class="value">{{ movie.Country }}</span>
+        </div>
+        
+        <div class="info-item" *ngIf="movie.BoxOffice && movie.BoxOffice !== 'N/A'">
+          <span class="label">Box Office</span>
+          <span class="value">{{ movie.BoxOffice }}</span>
+        </div>
+      </div>
+
+      <!-- Awards -->
+      <div class="section" *ngIf="movie.Awards && movie.Awards !== 'N/A' && movie.Awards !== 'N/A'">
+        <h2>Awards</h2>
+        <p class="awards-text">
+          <ion-icon name="trophy"></ion-icon>
+          {{ movie.Awards }}
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && !movie" class="error-container">
+    <ion-icon name="film-outline" class="error-icon"></ion-icon>
+    <h2>Movie Not Found</h2>
+    <p>Unable to load movie details</p>
+    <ion-button (click)="goBack()">Go Back</ion-button>
+  </div>
+
+</ion-content>

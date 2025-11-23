@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ categoryTitle }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="see-all-content">
+  <div class="movies-grid">
+    <div 
+      class="movie-card" 
+      *ngFor="let movie of movies"
+      (click)="openMovieDetail(movie.id)">
+      <img [src]="movie.poster" [alt]="movie.title" />
+      <div class="movie-info">
+        <p class="movie-title">{{ movie.title }}</p>
+        <div class="movie-meta" *ngIf="movie.year">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <span>{{ movie.year }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
