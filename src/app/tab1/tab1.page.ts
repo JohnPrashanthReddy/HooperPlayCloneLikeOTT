@@ -16,6 +16,16 @@ interface Movie {
   rating: number;
 }
 
+interface Notification {
+  id: number;
+  title: string;
+  message: string;
+  time: string;
+  type: 'new_release' | 'recommendation' | 'update' | 'promo';
+  read: boolean;
+  movieId?: string;
+}
+
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -42,6 +52,63 @@ export class Tab1Page implements OnInit, OnDestroy {
   topRatedMovies: Movie[] = [];
   nowPlayingMovies: Movie[] = [];
   upcomingMovies: Movie[] = [];
+
+  // Notifications
+  isNotificationsOpen = false;
+  notifications: Notification[] = [
+    {
+      id: 1,
+      title: 'New Release Alert!',
+      message: 'The Dark Knight Returns is now available to stream. Watch the legendary Batman in action!',
+      time: '2 mins ago',
+      type: 'new_release',
+      read: false,
+      movieId: 'tt0468569'
+    },
+    {
+      id: 2,
+      title: 'Recommended for You',
+      message: 'Based on your viewing history, you might enjoy "Inception" - a mind-bending thriller.',
+      time: '1 hour ago',
+      type: 'recommendation',
+      read: false,
+      movieId: 'tt1375666'
+    },
+    {
+      id: 3,
+      title: 'Weekend Special',
+      message: 'Get 50% off on premium subscription this weekend only! Upgrade now.',
+      time: '3 hours ago',
+      type: 'promo',
+      read: false
+    },
+    {
+      id: 4,
+      title: 'Continue Watching',
+      message: 'You left off at 45:23 in "Fight Club". Resume watching now!',
+      time: '5 hours ago',
+      type: 'update',
+      read: true,
+      movieId: 'tt0137523'
+    },
+    {
+      id: 5,
+      title: 'New Season Available',
+      message: 'Breaking Bad Season 5 is now streaming. Catch up on all the drama!',
+      time: '1 day ago',
+      type: 'new_release',
+      read: true
+    },
+    {
+      id: 6,
+      title: 'Your Watchlist Update',
+      message: '"The Matrix" from your watchlist is now available in 4K quality.',
+      time: '2 days ago',
+      type: 'update',
+      read: true,
+      movieId: 'tt0133093'
+    }
+  ];
 
   constructor(
     private movieService: MovieService,
@@ -233,5 +300,71 @@ navigateToSeeAll(title: string, movies: Movie[]) {
       movies: movies
     }
   });
+}
+
+// ==========================================
+// HEADER BUTTON NAVIGATION
+// ==========================================
+
+/** Navigate to Search (Tab2) */
+navigateToSearch() {
+  this.router.navigate(['/tabs/tab2']);
+}
+
+/** Navigate to Profile (Tab3) */
+navigateToProfile() {
+  this.router.navigate(['/tabs/tab3']);
+}
+
+// ==========================================
+// NOTIFICATIONS
+// ==========================================
+
+/** Get count of unread notifications */
+get unreadNotifications(): number {
+  return this.notifications.filter(n => !n.read).length;
+}
+
+/** Open notifications modal */
+openNotifications() {
+  this.isNotificationsOpen = true;
+}
+
+/** Close notifications modal */
+closeNotifications() {
+  this.isNotificationsOpen = false;
+}
+
+/** Mark all notifications as read */
+markAllAsRead() {
+  this.notifications = this.notifications.map(n => ({ ...n, read: true }));
+}
+
+/** Handle notification click */
+handleNotificationClick(notification: Notification) {
+  // Mark as read
+  notification.read = true;
+
+  // Navigate to movie if movieId exists
+  if (notification.movieId) {
+    this.closeNotifications();
+    this.router.navigate(['/movie-detail', notification.movieId]);
+  }
+}
+
+/** Get icon name based on notification type */
+getNotificationIcon(type: string): string {
+  switch (type) {
+    case 'new_release':
+      return 'film-outline';
+    case 'recommendation':
+      return 'star-outline';
+    case 'update':
+      return 'refresh-outline';
+    case 'promo':
+      return 'pricetag-outline';
+    default:
+      return 'notifications-outline';
+  }
 }
 }
